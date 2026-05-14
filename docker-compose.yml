@@ -1,0 +1,23 @@
+services:
+  api:
+    build: .
+    command: uvicorn backend.api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      - ~/Desktop:/root/Desktop
+      - ~/Screenshots:/root/Screenshots
+
+  watcher:
+    build: .
+    command: python backend/daemon/watcher.py
+    env_file: .env
+    environment:
+      - API_URL=http://api:8000/api/upload
+      - WATCH_FOLDER=/root/Desktop
+    volumes:
+      - ~/Desktop:/root/Desktop
+      - ~/Screenshots:/root/Screenshots
+    depends_on:
+      - api
